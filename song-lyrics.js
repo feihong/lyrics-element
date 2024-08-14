@@ -4,7 +4,12 @@ class SongLyrics extends HTMLElement {
       display: flex;
       flex-direction: column;
       gap: 1em;
+    }
+    .line {
       font-size: 1.5em;
+    }
+    .explanation {
+      color: gray;
     }
   </style>
   <div class="root"></div>`
@@ -13,8 +18,8 @@ class SongLyrics extends HTMLElement {
   constructor() {
     super()
     this.attachShadow({mode: 'open'})
-    this.onMutation = this.onMutation.bind(this)
     this.shadowRoot.innerHTML = SongLyrics.body
+    this.onMutation = this.onMutation.bind(this)
   }
 
   connectedCallback() {
@@ -50,12 +55,16 @@ class SongLyrics extends HTMLElement {
 
       for (const line of stanza.split(/\n/g)) {
         const ldiv = document.createElement('div')
-        ldiv.className = 'line'
-        ldiv.innerText = line
+        if (line.startsWith(';')) {
+          ldiv.className = 'explanation'
+          ldiv.innerText = line.substring(1).trim()
+        } else {
+          ldiv.className = 'line'
+          ldiv.innerText = line
+        }
         sdiv.appendChild(ldiv)
       }
     }
-
   }
 }
 
