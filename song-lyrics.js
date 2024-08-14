@@ -5,14 +5,22 @@ class SongLyrics extends HTMLElement {
       flex-direction: column;
       gap: 1em;
     }
+    .title {
+      font-size: 2em;
+    }
     .line {
-      font-size: 1.5em;
+      font-size: 1.3em;
     }
     .explanation {
       color: gray;
     }
   </style>
-  <div class="root"></div>`
+  <div class="root">
+    <div class="head">
+      <div class="title"></div>
+      <div class="explanation"></div>
+    </div>
+  </div>`
 
 
   constructor() {
@@ -24,28 +32,24 @@ class SongLyrics extends HTMLElement {
 
   connectedCallback() {
     this.observer = new MutationObserver(this.onMutation);
-    this.observer.observe(this, {
-      childList: true
-    })
+    this.observer.observe(this, {childList: true})
+
+    this.title = this.getAttribute('title')
+    this.explanation = this.getAttribute('explanation')
   }
 
-  disconnectedCallback() {
+  onMutation(_mutations) {
     this.observer.disconnect();
-  }
-
-  onMutation(mutations) {
-    for (const mutation of mutations) {
-      for (const node of mutation.addedNodes) {
-        if (node.nodeType == Node.TEXT_NODE) {
-          this.init(node.nodeValue)
-          return
-        }
-      }
+    if (this.firstChild.nodeType === Node.TEXT_NODE) {
+      this.init(this.firstChild.nodeValue)
     }
   }
 
   init(text) {
     const root = this.shadowRoot.querySelector('.root')
+
+    root.querySelector('.title').innerText = this.title
+    root.querySelector('.explanation').innerText = '“' + this.explanation + '”'
 
     const stanzas = text.trim().split(/\n{2,}/g)
     for (const stanza of stanzas) {
